@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#161616" />
+
+    <!-- SEO -->
+    <title>f4rceful.wtf</title>
+    <meta name="description" content="f4rceful — developer, building stuff that matters (sometimes)" />
+    <link rel="canonical" href="https://f4rceful.wtf" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://f4rceful.wtf" />
+    <meta property="og:site_name" content="f4rceful.wtf" />
+    <meta property="og:title" content="f4rceful.wtf" />
+    <meta property="og:description" content="f4rceful — developer, building stuff that matters (sometimes)" />
+    <meta property="og:image" content="https://f4rceful.wtf/og.png" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="f4rceful.wtf" />
+    <meta name="twitter:description" content="f4rceful — developer, building stuff that matters (sometimes)" />
+    <meta name="twitter:image" content="https://f4rceful.wtf/og.png" />
+
+    <!-- Performance: preconnect to font CDN -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "f4rceful",
+      "url": "https://f4rceful.wtf",
+      "sameAs": [
+        "https://github.com/f4rceful",
+        "https://t.me/f4rceful"
+      ]
+    }
+    </script>
+  </head>
+  <body>
+    <script>
+      (function(){var t=localStorage.getItem('theme');if(!t)t=matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);document.documentElement.style.colorScheme=t})()
+    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

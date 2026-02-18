@@ -1,0 +1,17 @@
+@keyframes accentGlow {
+  0%, 100% { text-shadow: 0 0 0 transparent; }
+  50% { text-shadow: 0 0 12px color-mix(in srgb, var(--accent) 50%, transparent); }
+}
+
+.welcome-section .accent {
+  color: var(--accent);
+  font-weight: 700;
+  animation: accentGlow 3s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.live-age {
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  font-weight: 600;
+}

@@ -1,0 +1,48 @@
+.cool-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--bg-secondary);
+  color: var(--text);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-family: var(--font);
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+.cool-button:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 15%, transparent);
+  transform: translateY(-1px);
+}
+
+.cool-button:active {
+  background: var(--accent-dim);
+  transform: scale(0.96) translateY(0);
+  box-shadow: none;
+}
+
+.cool-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.cool-button-icon {
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s;
+}
+
+.cool-button:hover .cool-button-icon {
+  transform: scale(1.1);
+}
+
+.cool-button-icon svg {
+  width: 18px;
+  height: 18px;
+}

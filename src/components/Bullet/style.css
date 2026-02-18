@@ -1,0 +1,13 @@
+.bullet {
+  display: inline;
+  background: var(--bg-secondary);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.9em;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.bullet:hover {
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg-secondary));
+  box-shadow: 0 0 6px color-mix(in srgb, var(--accent) 10%, transparent);
+}

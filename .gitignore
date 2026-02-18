@@ -1,0 +1,16 @@
+node_modules
+dist
+.vite
+*.local
+.claude/
+AGENTS.md
+tsconfig.tsbuildinfo
+server/.env
+server/dist
+*.db
+*.db-wal
+*.db-shm
+*.env
+.gemini/
+gha-creds-*.json
+SPOTIFY_SETUP.md

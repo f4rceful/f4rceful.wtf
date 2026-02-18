@@ -1,0 +1,32 @@
+.rolling-digit-wrapper {
+  display: inline-flex;
+  height: 1em;
+  overflow: hidden;
+  vertical-align: text-bottom;
+}
+
+.rolling-digit-track {
+  display: flex;
+  flex-direction: column;
+}
+
+.rolling-digit-track.rolling {
+  animation: roll-digits 2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.rolling-digit-item {
+  display: block;
+  height: 1em;
+  line-height: 1em;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+@keyframes roll-digits {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-13em);
+  }
+}

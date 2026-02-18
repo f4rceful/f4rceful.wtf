@@ -1,0 +1,17 @@
+.privacy-page {
+  gap: 0.8em;
+}
+
+.privacy-page p {
+  line-height: 1.7;
+}
+
+.privacy-page strong {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.privacy-back {
+  display: inline-block;
+  margin-top: 1rem;
+}

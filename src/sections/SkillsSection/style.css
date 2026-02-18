@@ -1,0 +1,87 @@
+.skills-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.skills-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skills-category {
+  font-size: 0.8em;
+  color: var(--text-dim);
+  text-transform: lowercase;
+  letter-spacing: 0.03em;
+}
+
+.skills-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.skill-tag {
+  position: relative;
+  padding: 4px 10px;
+  font-size: 0.85em;
+  border-radius: 4px;
+  border: 1px solid var(--text-dim);
+  color: var(--text-half);
+  cursor: default;
+  transition: border-color 0.3s;
+  animation: tagIn 0.3s ease-out both;
+  transform-style: preserve-3d;
+}
+
+.skill-tag-border {
+  position: absolute;
+  inset: -1px;
+  border-radius: 4px;
+  border: 1px solid var(--accent);
+  clip-path: circle(0% at 50% 50%);
+  pointer-events: none;
+}
+
+.skill-tag-text-hover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  clip-path: circle(0% at 50% 50%);
+  pointer-events: none;
+}
+
+.skill-tag--accent {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.skill-tag--accent:hover {
+  color: var(--accent);
+}
+
+.skill-tag--accent .skill-tag-border {
+  display: none;
+}
+
+@keyframes tagIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (min-width: 768px) {
+  .skills-grid {
+    flex-direction: row;
+    gap: 32px;
+  }
+
+  .skills-group {
+    flex: 1;
+  }
+}

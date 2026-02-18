@@ -1,0 +1,97 @@
+.wakatime {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.wakatime--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.wakatime-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.wakatime-label {
+  font-size: 0.8em;
+  color: var(--text-dim);
+}
+
+.wakatime-total {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.wakatime-languages {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wakatime-lang {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  opacity: 0;
+  animation: wakaLangIn 0.4s ease-out forwards;
+}
+
+@keyframes wakaLangIn {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.wakatime-lang-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.9em;
+}
+
+.wakatime-lang-name {
+  color: var(--text);
+}
+
+.wakatime-lang-pct {
+  font-size: 0.8em;
+  color: var(--text-dim);
+  font-family: 'Courier New', monospace;
+}
+
+.wakatime-bar-track {
+  height: 3px;
+  background: var(--text-dim);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.wakatime-bar-fill {
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  border-radius: 2px;
+  animation: wakaBarGrow 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  box-shadow: 0 0 6px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+@keyframes wakaBarGrow {
+  from {
+    width: 0;
+  }
+  to {
+    width: var(--target-width);
+  }
+}

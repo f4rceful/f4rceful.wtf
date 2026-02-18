@@ -1,0 +1,63 @@
+.links-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@keyframes linkBtnIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.links-grid > :nth-child(1) { animation-delay: 0.05s; }
+.links-grid > :nth-child(2) { animation-delay: 0.1s; }
+.links-grid > :nth-child(3) { animation-delay: 0.15s; }
+
+.link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--bg-secondary);
+  color: var(--text-half);
+  border: 1px solid var(--text-dim);
+  border-radius: var(--radius);
+  font-family: var(--font);
+  font-size: 0.9em;
+  cursor: pointer;
+  text-decoration: none;
+  transform-style: preserve-3d;
+  animation: linkBtnIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.link-button:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  opacity: 1;
+  text-shadow: none;
+}
+
+.link-button-icon {
+  display: flex;
+  align-items: center;
+  color: var(--text-dim);
+  transition: color 0.4s, transform 0.4s;
+}
+
+.link-button-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.link-button:hover .link-button-icon {
+  color: var(--accent);
+  transform: scale(1.15);
+}
+
+.link-button-text {
+  transition: color 0.4s;
+}
+
+.link-button:hover .link-button-text {
+  color: var(--accent);
+}

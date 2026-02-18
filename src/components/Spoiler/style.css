@@ -1,0 +1,32 @@
+.spoiler {
+  background: var(--bg-secondary);
+  color: transparent;
+  border-radius: 4px;
+  padding: 0 4px;
+  cursor: pointer;
+  transition: color 0.4s ease, background 0.4s ease, box-shadow 0.3s;
+  user-select: none;
+  position: relative;
+}
+
+.spoiler:hover {
+  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 30%, transparent);
+  background: color-mix(in srgb, var(--accent) 20%, var(--bg-secondary));
+}
+
+@keyframes spoilerReveal {
+  0% { filter: blur(4px); }
+  100% { filter: blur(0); }
+}
+
+.spoiler-revealed {
+  color: var(--text);
+  background: transparent;
+  cursor: default;
+  user-select: auto;
+  animation: spoilerReveal 0.4s ease-out;
+}
+
+.spoiler-revealed:hover {
+  box-shadow: none;
+}

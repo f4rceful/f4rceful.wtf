@@ -1,0 +1,430 @@
+.shoutbox-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shoutbox-input {
+  background: var(--bg-secondary);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.9em;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.3s;
+}
+
+.shoutbox-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent), 0 0 20px color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.shoutbox-textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.shoutbox-form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.shoutbox-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.shoutbox-refresh {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 1px solid var(--text-dim);
+  border-radius: var(--radius);
+  color: var(--text-half);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, transform 0.3s;
+}
+
+.shoutbox-refresh:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.shoutbox-refresh:active {
+  background: var(--accent-dim);
+  transform: rotate(180deg);
+}
+
+.shoutbox-refresh svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
+}
+
+.shoutbox-refresh:hover svg {
+  transform: rotate(45deg);
+}
+
+.shoutbox-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── Card Entry ── */
+
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.shoutbox-card {
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  animation: cardSlideIn 0.4s ease-out both;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.shoutbox-card:hover {
+}
+
+.shoutbox-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.shoutbox-author {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.9em;
+}
+
+.shoutbox-text {
+  word-break: break-word;
+}
+
+/* ── Answer ── */
+
+@keyframes answerReveal {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+    max-height: 200px;
+  }
+}
+
+.shoutbox-answer {
+  margin-top: 4px;
+  padding: 8px;
+  background: var(--accent-dim);
+  border-radius: calc(var(--radius) - 2px);
+  font-size: 0.9em;
+  animation: answerReveal 0.4s ease-out;
+  border-left: 2px solid var(--accent);
+}
+
+.shoutbox-answer-label {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ── Pinned Card ── */
+
+@keyframes pinnedGlow {
+  0%, 100% { box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 15%, transparent); }
+  50% { box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 30%, transparent); }
+}
+
+.shoutbox-card--pinned {
+  border: 1px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 5%, var(--bg-secondary));
+  animation: cardSlideIn 0.4s ease-out both, pinnedGlow 3s ease-in-out infinite;
+}
+
+.shoutbox-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.shoutbox-pin-icon {
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+}
+
+.shoutbox-pin-icon svg {
+  width: 13px;
+  height: 13px;
+  animation: pinSpin 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes pinSpin {
+  from { transform: rotate(-45deg) scale(0); }
+  to { transform: rotate(0) scale(1); }
+}
+
+/* ── Admin Heart ── */
+
+@keyframes heartPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+.shoutbox-admin-heart {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 100, 100, 0.3);
+  background: rgba(255, 100, 100, 0.1);
+  font-size: 0.8em;
+  color: #ff6464;
+  cursor: default;
+}
+
+/* ── Reactions ── */
+
+.shoutbox-reactions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+  align-items: center;
+  position: relative;
+}
+
+@keyframes reactionPop {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.shoutbox-reaction {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--text-dim);
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s, box-shadow 0.2s;
+  animation: reactionPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.shoutbox-reaction:hover {
+  border-color: var(--accent);
+  transform: scale(1.08);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.shoutbox-reaction:active {
+  transform: scale(0.92);
+}
+
+.shoutbox-reaction--active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.shoutbox-reaction--add {
+  border-style: dashed;
+  font-size: 1em;
+  padding: 2px 10px;
+  color: var(--text-half);
+  transition: color 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.shoutbox-reaction--add:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  transform: rotate(90deg) scale(1.1);
+}
+
+.shoutbox-reaction-count {
+  font-size: 0.8em;
+  color: var(--text-half);
+}
+
+/* ── Emoji Picker ── */
+
+.shoutbox-picker-wrapper {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  z-index: 20;
+  animation: pickerSlideIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes pickerSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.shoutbox-picker {
+  background: var(--bg);
+  border: 1px solid var(--text-dim);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px color-mix(in srgb, var(--accent) 8%, transparent);
+  min-width: 200px;
+}
+
+.shoutbox-picker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.shoutbox-picker-title {
+  font-size: 0.7em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.shoutbox-picker-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s, transform 0.2s;
+}
+
+.shoutbox-picker-close svg {
+  width: 14px;
+  height: 14px;
+}
+
+.shoutbox-picker-close:hover {
+  color: var(--text);
+  background: var(--bg-secondary);
+  transform: rotate(90deg);
+}
+
+.shoutbox-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  gap: 2px;
+}
+
+.shoutbox-picker-emoji {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: emojiPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes emojiPop {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.shoutbox-picker-emoji:hover {
+  background: var(--bg-secondary);
+  transform: scale(1.25);
+}
+
+.shoutbox-picker-emoji:active {
+  transform: scale(0.9);
+}
+
+@media (max-width: 480px) {
+  .shoutbox-picker-wrapper {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    z-index: 100;
+  }
+
+  .shoutbox-picker {
+    border-radius: 12px 12px 0 0;
+    width: 100%;
+  }
+}
+
+/* ── Pagination ── */
+
+.shoutbox-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  animation: paginationFadeIn 0.3s ease-out;
+}
+
+@keyframes paginationFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,82 @@
+.donations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+@keyframes copyRowIn {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.copy-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s, box-shadow 0.2s;
+  animation: copyRowIn 0.4s ease-out both;
+}
+
+.donations-list > :nth-child(1) { animation-delay: 0.05s; }
+.donations-list > :nth-child(2) { animation-delay: 0.12s; }
+.donations-list > :nth-child(3) { animation-delay: 0.19s; }
+.donations-list > :nth-child(4) { animation-delay: 0.26s; }
+
+.copy-row:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 12%, transparent);
+  transform: translateX(4px);
+}
+
+.copy-row:active {
+  transform: scale(0.98);
+}
+
+.copy-row-label {
+  font-weight: 700;
+  min-width: 40px;
+  color: var(--accent);
+}
+
+.copy-row-value {
+  flex: 1;
+  opacity: 0.6;
+  font-size: 0.85em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.copy-row-icon {
+  display: flex;
+  align-items: center;
+  opacity: 0.4;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.copy-row:hover .copy-row-icon {
+  opacity: 1;
+}
+
+.copy-row-icon--copied {
+  opacity: 1 !important;
+  color: var(--success);
+  animation: copyBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes copyBounce {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
