@@ -32,6 +32,7 @@ export function ShoutboxSection() {
   const [sending, setSending] = useState(false)
   const [pickerOpen, setPickerOpen] = useState<number | null>(null)
   const [emojis, setEmojis] = useState<string[]>([])
+  const [error, setError] = useState(false)
 
   const sid = getSessionId()
 
@@ -48,7 +49,10 @@ export function ShoutboxSection() {
       const data: ShoutboxResponse = await res.json()
       setMessages(data.messages)
       setTotalPages(data.totalPages)
-    } catch { toast('failed to load messages') }
+      setError(false)
+    } catch {
+      setError(true)
+    }
   }, [page, sid])
 
   useEffect(() => { fetchMessages() }, [fetchMessages])
@@ -135,7 +139,13 @@ export function ShoutboxSection() {
       </form>
 
       <div className="shoutbox-messages">
-        {messages.map((msg, i) => (
+        {error && (
+          <div className="shoutbox-error">
+            <p>shoutbox is temporarily unavailable</p>
+            <CoolButton onClick={fetchMessages}>retry</CoolButton>
+          </div>
+        )}
+        {!error && messages.map((msg, i) => (
           <div key={msg.id} className={`shoutbox-card ${msg.pinned ? 'shoutbox-card--pinned' : ''}`}
             style={{ animationDelay: `${i * 0.06}s` }}>
             <div className="shoutbox-card-header">
@@ -206,7 +216,7 @@ export function ShoutboxSection() {
             </div>
           </div>
         ))}
-        {messages.length === 0 && (
+        {!error && messages.length === 0 && (
           <p className="text-half-visible">no messages yet. be the first!</p>
         )}
       </div>

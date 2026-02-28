@@ -18,6 +18,10 @@ const SKILLS = [
       { label: 'Docker' },
       { label: 'Nginx' },
       { label: 'JWT/OAuth2' },
+      { label: 'Rust', accent: true },
+      { label: 'Tokio' },
+      { label: 'SQLite' },
+      { label: 'sqlx' },
     ],
   },
   {
@@ -46,6 +50,9 @@ const SKILLS = [
       { label: 'SciPy' },
       { label: 'SpaCy' },
       { label: 'NLTK' },
+      { label: 'LLM Agents', accent: true },
+      { label: 'Ollama' },
+      { label: 'Whisper' },
     ],
   },
 ]
