@@ -20,6 +20,7 @@ async function notifyBotAboutMessage(payload: {
   text: string
   createdAt: string
   geo: string
+  ip: string
 }) {
   const eventsUrl = process.env.TELEGRAM_BOT_EVENTS_URL
   const secret = process.env.BOT_SHARED_SECRET
@@ -135,6 +136,15 @@ router.post('/shoutbox', async (req, res) => {
   const userAgent = req.headers['user-agent'] || 'unknown'
   const geo = await fetchGeo(ip)
 
+  const { rows: bannedRows } = await pool.query(
+    `SELECT ip FROM banned_ips WHERE ip = $1`,
+    [ip]
+  )
+  if (bannedRows.length > 0) {
+    res.status(403).json({ error: 'Forbidden' })
+    return
+  }
+
   const { rows } = await pool.query(
     `INSERT INTO messages (text, ip, user_agent, geo) VALUES ($1, $2, $3, $4)
      RETURNING id, text, created_at, geo`,
@@ -148,6 +158,7 @@ router.post('/shoutbox', async (req, res) => {
       text: inserted.text,
       createdAt: inserted.created_at,
       geo: inserted.geo || '{}',
+      ip: ip,
     })
   }
 
