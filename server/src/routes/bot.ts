@@ -112,4 +112,59 @@ router.post('/bot/messages/:id/action', async (req, res) => {
   res.json({ ok: true, action })
 })
 
+router.get('/bot/messages/search', async (req, res) => {
+  const q = (req.query.q as string || '').trim()
+  const limit = Math.min(20, Math.max(1, parseInt(req.query.limit as string, 10) || 5))
+
+  if (!q) {
+    res.status(400).json({ error: 'q is required' })
+    return
+  }
+
+  const { rows } = await pool.query(
+    `SELECT id, text, answer, banned, pinned, admin_liked, created_at
+     FROM messages
+     WHERE text ILIKE $1
+     ORDER BY created_at DESC
+     LIMIT $2`,
+    [`%${q}%`, limit]
+  )
+
+  res.json({ messages: rows as MessageRow[] })
+})
+
+router.get('/bot/stats', async (_req, res) => {
+  const query = (interval: string) =>
+    Promise.all([
+      pool.query(`SELECT COUNT(*)::int AS count FROM messages WHERE created_at >= NOW() - INTERVAL '${interval}'`),
+      pool.query(`SELECT COUNT(DISTINCT session_id)::int AS count FROM visits WHERE created_at >= NOW() - INTERVAL '${interval}'`),
+    ])
+
+  const [todayMsgs, todayVisits] = await query('1 day')
+  const [weekMsgs, weekVisits] = await query('7 days')
+  const [monthMsgs, monthVisits] = await query('30 days')
+
+  res.json({
+    today: { messages: todayMsgs.rows[0].count, visits: todayVisits.rows[0].count },
+    week:  { messages: weekMsgs.rows[0].count,  visits: weekVisits.rows[0].count },
+    month: { messages: monthMsgs.rows[0].count, visits: monthVisits.rows[0].count },
+  })
+})
+
+router.post('/bot/ban-ip', async (req, res) => {
+  const { ip } = req.body as { ip?: string }
+
+  if (!ip || typeof ip !== 'string' || !ip.trim()) {
+    res.status(400).json({ error: 'ip is required' })
+    return
+  }
+
+  await pool.query(
+    `INSERT INTO banned_ips (ip) VALUES ($1) ON CONFLICT (ip) DO NOTHING`,
+    [ip.trim()]
+  )
+
+  res.json({ ok: true, ip: ip.trim() })
+})
+
 export default router
