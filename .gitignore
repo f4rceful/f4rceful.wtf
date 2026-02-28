@@ -3,6 +3,7 @@ dist
 .vite
 *.local
 .claude/
+CLAUDE.md
 AGENTS.md
 tsconfig.tsbuildinfo
 server/.env
@@ -11,6 +12,5 @@ server/dist
 *.db-wal
 *.db-shm
 *.env
-.gemini/
-gha-creds-*.json
 SPOTIFY_SETUP.md
+deploy.sh
