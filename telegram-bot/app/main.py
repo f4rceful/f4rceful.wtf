@@ -8,7 +8,7 @@ import httpx
 import uvicorn
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.filters import Command
-from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message
+from aiogram.types import CallbackQuery, ForceReply, InlineKeyboardButton, InlineKeyboardMarkup, Message
 from fastapi import FastAPI, Header, HTTPException
 from pydantic import BaseModel
 
@@ -29,6 +29,9 @@ ADMIN_IDS = {
   if x.strip()
 }
 
+# reply_msg_id -> shoutbox_msg_id, tracks pending Answer flows
+pending_answers: dict[int, int] = {}
+
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 router = Router()
@@ -40,20 +43,28 @@ class NewMessageEvent(BaseModel):
   text: str
   createdAt: str
   geo: str = "{}"
+  ip: str = ""
 
 
 def is_admin(user_id: int | None) -> bool:
   return user_id is not None and user_id in ADMIN_IDS
 
 
-def action_keyboard(message_id: int) -> InlineKeyboardMarkup:
-  buttons = [
-    [InlineKeyboardButton(text="Ban", callback_data=f"act:ban:{message_id}")],
-    [InlineKeyboardButton(text="Pin", callback_data=f"act:pin:{message_id}")],
-    [InlineKeyboardButton(text="Like", callback_data=f"act:like:{message_id}")],
-    [InlineKeyboardButton(text="Delete", callback_data=f"act:delete:{message_id}")],
+def action_keyboard(message_id: int, ip: str = "") -> InlineKeyboardMarkup:
+  rows = [
+    [
+      InlineKeyboardButton(text="🚫 Ban", callback_data=f"act:ban:{message_id}"),
+      InlineKeyboardButton(text="🗑 Delete", callback_data=f"act:delete:{message_id}"),
+    ],
+    [
+      InlineKeyboardButton(text="📌 Pin", callback_data=f"act:pin:{message_id}"),
+      InlineKeyboardButton(text="❤️ Like", callback_data=f"act:like:{message_id}"),
+    ],
+    [InlineKeyboardButton(text="💬 Answer", callback_data=f"act:answer:{message_id}")],
   ]
-  return InlineKeyboardMarkup(inline_keyboard=buttons)
+  if ip:
+    rows.append([InlineKeyboardButton(text=f"🔴 Ban IP ({ip})", callback_data=f"act:banip:{ip}")])
+  return InlineKeyboardMarkup(inline_keyboard=rows)
 
 
 def parse_country(geo_raw: str) -> str:
@@ -91,10 +102,12 @@ def format_event_text(event: NewMessageEvent) -> str:
   except ValueError:
     created = event.createdAt
   country = parse_country(event.geo)
+  ip_line = f"IP: {event.ip}\n" if event.ip else ""
   return (
     f"New shoutbox message\n"
     f"ID: #{event.id}\n"
     f"Country: {country}\n"
+    f"{ip_line}"
     f"Created: {created}\n\n"
     f"{event.text}"
   )
@@ -110,7 +123,10 @@ async def handle_start(message: Message) -> None:
     "Commands:\n"
     "/status - API and DB status\n"
     "/metrics - visits and messages metrics\n"
-    "/latest - show last 5 messages"
+    "/latest - show last 5 messages\n"
+    "/find <text> - search messages\n"
+    "/stats - statistics by period\n"
+    "/ban_ip <ip> - ban an IP address"
   )
 
 
@@ -171,6 +187,98 @@ async def handle_latest(message: Message) -> None:
     await message.answer(f"Latest error: {exc}")
 
 
+@router.message(Command("find"))
+async def handle_find(message: Message) -> None:
+  if not is_admin(message.from_user.id if message.from_user else None):
+    await message.answer("Access denied.")
+    return
+
+  args = (message.text or "").split(maxsplit=1)
+  if len(args) < 2 or not args[1].strip():
+    await message.answer("Usage: /find <text>")
+    return
+
+  try:
+    data = await call_api("GET", "/api/bot/messages/search", params={"q": args[1].strip(), "limit": 5})
+    items = data.get("messages", [])
+    if not items:
+      await message.answer("No messages found.")
+      return
+    for item in items:
+      text = (
+        f"Message #{item['id']}\n"
+        f"Banned: {item['banned']} | Pinned: {item['pinned']} | Liked: {item['admin_liked']}\n\n"
+        f"{item['text']}"
+      )
+      await message.answer(text, reply_markup=action_keyboard(item["id"]))
+  except Exception as exc:
+    await message.answer(f"Search error: {exc}")
+
+
+@router.message(Command("stats"))
+async def handle_stats(message: Message) -> None:
+  if not is_admin(message.from_user.id if message.from_user else None):
+    await message.answer("Access denied.")
+    return
+
+  try:
+    data = await call_api("GET", "/api/bot/stats")
+    await message.answer(
+      f"📊 Statistics\n\n"
+      f"Today:\n"
+      f"  Messages: {data['today']['messages']}\n"
+      f"  Visits: {data['today']['visits']}\n\n"
+      f"Last 7 days:\n"
+      f"  Messages: {data['week']['messages']}\n"
+      f"  Visits: {data['week']['visits']}\n\n"
+      f"Last 30 days:\n"
+      f"  Messages: {data['month']['messages']}\n"
+      f"  Visits: {data['month']['visits']}"
+    )
+  except Exception as exc:
+    await message.answer(f"Stats error: {exc}")
+
+
+@router.message(Command("ban_ip"))
+async def handle_ban_ip(message: Message) -> None:
+  if not is_admin(message.from_user.id if message.from_user else None):
+    await message.answer("Access denied.")
+    return
+
+  args = (message.text or "").split(maxsplit=1)
+  if len(args) < 2 or not args[1].strip():
+    await message.answer("Usage: /ban_ip <ip>")
+    return
+
+  try:
+    await call_api("POST", "/api/bot/ban-ip", json_body={"ip": args[1].strip()})
+    await message.answer(f"IP {args[1].strip()} banned.")
+  except Exception as exc:
+    await message.answer(f"Ban IP error: {exc}")
+
+
+@router.message(F.reply_to_message)
+async def handle_reply(message: Message) -> None:
+  if not is_admin(message.from_user.id if message.from_user else None):
+    return
+  if message.reply_to_message is None:
+    return
+
+  shoutbox_id = pending_answers.pop(message.reply_to_message.message_id, None)
+  if shoutbox_id is None:
+    return
+
+  try:
+    await call_api(
+      "POST",
+      f"/api/bot/messages/{shoutbox_id}/action",
+      json_body={"action": "answer", "answer": message.text or ""},
+    )
+    await message.reply("Answer sent!")
+  except Exception as exc:
+    await message.reply(f"Failed to send answer: {exc}")
+
+
 @router.callback_query(F.data.startswith("act:"))
 async def handle_action(callback: CallbackQuery) -> None:
   user_id = callback.from_user.id if callback.from_user else None
@@ -178,11 +286,35 @@ async def handle_action(callback: CallbackQuery) -> None:
     await callback.answer("Access denied", show_alert=True)
     return
 
+  parts = (callback.data or "").split(":", 2)
+  if len(parts) < 3:
+    await callback.answer("Invalid action", show_alert=True)
+    return
+
+  _, action, payload = parts
+
+  if action == "answer":
+    message_id = int(payload)
+    sent = await callback.message.answer(
+      f"Reply to this message with your answer for message #{message_id}:",
+      reply_markup=ForceReply(selective=True),
+    )
+    pending_answers[sent.message_id] = message_id
+    await callback.answer("Reply with your answer")
+    return
+
+  if action == "banip":
+    try:
+      await call_api("POST", "/api/bot/ban-ip", json_body={"ip": payload})
+      await callback.answer(f"IP {payload} banned", show_alert=True)
+    except Exception as exc:
+      await callback.answer(f"Failed: {exc}", show_alert=True)
+    return
+
   try:
-    _, action, message_id = (callback.data or "").split(":")
     await call_api(
       "POST",
-      f"/api/bot/messages/{message_id}/action",
+      f"/api/bot/messages/{payload}/action",
       json_body={"action": action},
     )
     await callback.answer(f"Done: {action}")
@@ -209,7 +341,7 @@ async def on_new_message(
   text = format_event_text(event)
   for admin_id in ADMIN_IDS:
     try:
-      await bot.send_message(admin_id, text, reply_markup=action_keyboard(event.id))
+      await bot.send_message(admin_id, text, reply_markup=action_keyboard(event.id, event.ip))
     except Exception:
       # Keep processing even if one chat is unavailable.
       continue
