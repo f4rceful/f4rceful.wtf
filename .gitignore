@@ -14,3 +14,8 @@ server/dist
 *.env
 SPOTIFY_SETUP.md
 deploy.sh
+serv/app/
+serv/dist/
+serv/rust-service/target/
+__pycache__/
+*.pyc
