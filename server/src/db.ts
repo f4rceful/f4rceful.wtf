@@ -56,6 +56,12 @@ export async function initDb() {
   await pool.query(`CREATE INDEX IF NOT EXISTS idx_messages_banned_created ON messages(banned, created_at DESC)`)
   await pool.query(`CREATE INDEX IF NOT EXISTS idx_visits_session_id ON visits(session_id)`)
   await pool.query(`CREATE INDEX IF NOT EXISTS idx_visits_created_at ON visits(created_at)`)
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS banned_ips (
+      ip         TEXT PRIMARY KEY,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `)
 
   console.log('Database initialized (PostgreSQL)')
 }
