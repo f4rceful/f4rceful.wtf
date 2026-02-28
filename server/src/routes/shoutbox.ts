@@ -15,6 +15,31 @@ interface MessageRow {
 
 const router = Router()
 
+async function notifyBotAboutMessage(payload: {
+  id: number
+  text: string
+  createdAt: string
+  geo: string
+}) {
+  const eventsUrl = process.env.TELEGRAM_BOT_EVENTS_URL
+  const secret = process.env.BOT_SHARED_SECRET
+
+  if (!eventsUrl || !secret) return
+
+  try {
+    await fetch(`${eventsUrl}/events/new-message`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-bot-secret': secret,
+      },
+      body: JSON.stringify(payload),
+    })
+  } catch {
+    // Non-blocking integration: shoutbox must work even if bot is unavailable.
+  }
+}
+
 async function getAllowedEmojis(): Promise<string[]> {
   const { rows } = await pool.query(`SELECT value FROM settings WHERE key = $1`, ['reaction_emojis'])
   return rows[0] ? JSON.parse(rows[0].value) : ['👍', '❤️', '😂', '😮', '😢', '🔥']
@@ -110,10 +135,21 @@ router.post('/shoutbox', async (req, res) => {
   const userAgent = req.headers['user-agent'] || 'unknown'
   const geo = await fetchGeo(ip)
 
-  await pool.query(
-    `INSERT INTO messages (text, ip, user_agent, geo) VALUES ($1, $2, $3, $4)`,
+  const { rows } = await pool.query(
+    `INSERT INTO messages (text, ip, user_agent, geo) VALUES ($1, $2, $3, $4)
+     RETURNING id, text, created_at, geo`,
     [text.trim(), ip, userAgent, geo]
   )
+
+  const inserted = rows[0]
+  if (inserted) {
+    void notifyBotAboutMessage({
+      id: inserted.id,
+      text: inserted.text,
+      createdAt: inserted.created_at,
+      geo: inserted.geo || '{}',
+    })
+  }
 
   res.status(201).json({ ok: true })
 })

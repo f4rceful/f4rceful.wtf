@@ -7,6 +7,7 @@ import adminRoutes from './routes/admin.js'
 import analyticsRoutes from './routes/analytics.js'
 import spotifyRoutes from './routes/spotify.js'
 import wakatimeRoutes from './routes/wakatime.js'
+import botRoutes from './routes/bot.js'
 
 const app = express()
 const port = parseInt(process.env.PORT || '3001')
@@ -23,6 +24,7 @@ app.use('/api', adminRoutes)
 app.use('/api', analyticsRoutes)
 app.use('/api', spotifyRoutes)
 app.use('/api', wakatimeRoutes)
+app.use('/api', botRoutes)
 
 await initDb()
 const server = app.listen(port, () => {

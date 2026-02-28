@@ -1,0 +1,52 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: f4rceful
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  rust-service:
+    build:
+      context: ./rust-service
+    ports:
+      - "8081:8081"
+
+  api:
+    build:
+      context: ./server
+    environment:
+      PORT: 3001
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/f4rceful
+      CORS_ORIGIN: http://localhost:5173
+      JWT_SECRET: ${JWT_SECRET:-change-me}
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:-}
+      BOT_SHARED_SECRET: ${BOT_SHARED_SECRET:-change-me}
+      TELEGRAM_BOT_EVENTS_URL: http://telegram-bot:8080
+      RUST_SERVICE_URL: http://rust-service:8081
+    depends_on:
+      - postgres
+      - rust-service
+    ports:
+      - "3001:3001"
+
+  telegram-bot:
+    build:
+      context: ./telegram-bot
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_ADMIN_IDS: ${TELEGRAM_ADMIN_IDS:-}
+      API_BASE_URL: http://api:3001
+      BOT_SHARED_SECRET: ${BOT_SHARED_SECRET:-change-me}
+      BOT_EVENTS_PORT: 8080
+    depends_on:
+      - api
+    ports:
+      - "8080:8080"
+
+volumes:
+  pg_data:
